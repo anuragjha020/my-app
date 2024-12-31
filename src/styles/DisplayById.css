@@ -1,0 +1,19 @@
+.title {
+    text-align: center;
+}
+
+.output-section hr {
+    margin-top: 10px;
+}
+
+.output-section button {
+    padding: 5px;
+    font-size: 14px;
+}
+
+.avatar-section .avatar-image {
+    height: 50px;
+    width: 50px;
+    border-radius: 8px;
+    object-fit: cover;
+}

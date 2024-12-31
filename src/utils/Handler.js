@@ -1,77 +1,76 @@
-//===================This Api is created by me ========================================
 const API_BASE_URL = `http://localhost:5000/api/events`;
 
-// Submit data ======================================================
+const API_ENDPOINTS = {
+  create: `${API_BASE_URL}/add`,
+  update: (id) => `${API_BASE_URL}/update/${id}`,
+  fetchAll: `${API_BASE_URL}/get`,
+  fetchById: (id) => `${API_BASE_URL}/get/${id}`,
+  delete: (id) => `${API_BASE_URL}/delete/${id}`,
+};
+
+// function for errors
+const handleError = (error, setErrorMessage) => {
+  console.error("Error:", error.message);
+  if (setErrorMessage) {
+    setErrorMessage(error.message);
+  }
+  alert(`Error: ${error.message}`);
+};
+
+// Submit data (create or update)
 export const handleSubmit = async (
   formValues,
   { setSubmitting, resetForm }
 ) => {
-  console.log("Submitting values:", formValues);
-
   try {
-    const {
-      id, // Only required for update
-      title,
-      untaggedOrganizers,
-      startDate,
-      dueDate,
-      destinationLink,
-      status,
-    } = formValues;
+    const { id, avatar, ...otherFields } = formValues;
 
-    const payload = {
-      title,
-      untaggedOrganizers,
-      startDate,
-      dueDate,
-      destinationLink,
-      status,
-      adminStatus: "approved",
-    };
-    console.log("payload to send", payload);
+    let body;
+    const headers = avatar ? undefined : { "Content-Type": "application/json" };
 
-    // If ID is present, update the record using PUT, else create using POST
-    // Use PUT for updates, POST for creates
-    const method = id ? "PUT" : "POST";
-    const url = id
-      ? `${API_BASE_URL}/update/${id}` // Update URL with ID
-      : `${API_BASE_URL}/add`; // Create URL
+    if (avatar) {
+      body = new FormData();
+      Object.keys(formValues).forEach((key) => {
+        body.append(key, formValues[key]);
+      });
+    } else {
+      body = JSON.stringify({ ...otherFields, adminStatus: "approved" });
+    }
 
-    const response = await fetch(url, {
-      method: method,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
+    const response = await fetch(
+      id ? API_ENDPOINTS.update(id) : API_ENDPOINTS.create,
+      {
+        method: id ? "PUT" : "POST",
+        headers,
+        body,
+      }
+    );
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error("Error Response:", errorData);
       throw new Error(
-        `Failed to ${id ? "update" : "create"} event. ${
+        `Failed to ${id ? "update" : "create"} event: ${
           errorData.message || "Unknown error"
         }`
       );
     }
 
     const data = await response.json();
+    alert(`${id ? "Updated" : "Created"} event successfully!`);
     console.log(`${id ? "Updated" : "Created"} Event:`, data);
 
-    alert(`${id ? "Updated" : "Created"} event successfully!`);
+    if (!id) resetForm(); // Reset form only for create
   } catch (error) {
-    console.error(`${formValues.id ? "Update" : "Create"} error:`, error);
-    alert(`${formValues.id ? "Update" : "Create"} error: ${error.message}`);
+    handleError(error);
   } finally {
     setSubmitting(false);
-    resetForm();
   }
 };
 
-// Fetch all records ==================================================
+// Fetch all records
 export const handleFetchAll = async (setFetchedData, setErrorMessage) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/get`, {
+    const response = await fetch(API_ENDPOINTS.fetchAll, {
       method: "GET",
     });
 
@@ -79,49 +78,41 @@ export const handleFetchAll = async (setFetchedData, setErrorMessage) => {
       throw new Error("Failed to fetch all data.");
     }
 
-    setFetchedData(null);
-
     const data = await response.json();
-    console.log("api data", data);
+    console.log("Fetched all data:", data);
 
     setFetchedData(data);
-    setErrorMessage(null);
+    if (setErrorMessage) setErrorMessage(null);
   } catch (error) {
-    console.error("Error fetching all data:", error);
-    setErrorMessage(error.message);
+    handleError(error, setErrorMessage);
   }
 };
 
-// Fetch a specific record by ID =============================================
-export const handleSearchById = async (
-  searchId,
-  setFetchedDataById,
-  setErrorMessage
-) => {
+// Fetch a specific record by ID
+export const handleSearchById = async (id, setFetchedData, setErrorMessage) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/get/${searchId}`, {
+    const response = await fetch(API_ENDPOINTS.fetchById(id), {
       method: "GET",
     });
 
     if (!response.ok) {
-      throw new Error(`No data found for ID : ${searchId}`);
+      throw new Error(`No data found for ID: ${id}`);
     }
 
     const data = await response.json();
-    setFetchedDataById(data);
-    setErrorMessage(null);
+    console.log("Fetched data by ID:", data);
+
+    setFetchedData(data);
+    if (setErrorMessage) setErrorMessage(null);
   } catch (error) {
-    console.error("Error fetching by ID:", error);
-    setErrorMessage(error.message);
+    handleError(error, setErrorMessage);
   }
 };
 
 // Delete a record
 export const handleDelete = async (id) => {
   try {
-    console.log("delete called");
-
-    const response = await fetch(`${API_BASE_URL}/delete/${id}`, {
+    const response = await fetch(API_ENDPOINTS.delete(id), {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -130,15 +121,12 @@ export const handleDelete = async (id) => {
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error("Error Response:", errorData);
-      throw new Error("Failed to delete record.");
+      throw new Error(errorData.message || "Failed to delete record.");
     }
 
     alert(`Record with ID ${id} deleted successfully!`);
-    const data = response.json();
-    return data;
+    console.log(`Deleted record with ID: ${id}`);
   } catch (error) {
-    console.error("Delete error:", error);
-    alert("Error deleting record: " + error.message);
+    handleError(error);
   }
 };

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { handleSearchById, handleDelete } from "../utils/Handler";
 import Button from "../ui/Button";
 import BackButton from "../ui/BackButton";
+import "../styles/DisplayById.css";
 
 function DisplayById() {
   const { id } = useParams();
@@ -31,13 +32,24 @@ function DisplayById() {
 
   return (
     <div className="output-section">
-      <h2>Event by ID</h2>
+      <h2 className="title">Event by ID</h2>
       {loading ? (
         <p>Loading...</p>
       ) : errorMessage ? (
         <p className="error-message">{errorMessage}</p>
       ) : fetchedDataById ? (
         <div className="data-item">
+          {/* Avatar Section */}
+          {fetchedDataById.data.avatar && (
+            <div className="avatar-section">
+              <img
+                src={fetchedDataById.data.avatar}
+                alt="Avatar"
+                className="avatar-image"
+              />
+            </div>
+          )}
+          {/* Event Details */}
           <p>
             <strong>ID:</strong> {fetchedDataById.data.id}
           </p>
@@ -67,6 +79,7 @@ function DisplayById() {
           <p>
             <strong>Status:</strong> {fetchedDataById.data.status || ""}
           </p>
+          {/* Buttons */}
           <Button variant="warning" onClick={handleEdit}>
             Edit
           </Button>{" "}

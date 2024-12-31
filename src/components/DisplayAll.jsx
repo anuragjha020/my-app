@@ -70,6 +70,16 @@ function DisplayAll() {
           {fetchedData && fetchedData.data?.length > 0 ? (
             fetchedData.data.map((event) => (
               <div className="data-item" key={event.id}>
+                {/* Avatar Section */}
+                {event.avatar && (
+                  <div className="avatar-section">
+                    <img
+                      src={event.avatar}
+                      alt="Avatar"
+                      className="avatar-image"
+                    />
+                  </div>
+                )}
                 <p>
                   <strong>ID:</strong> {event.id}
                 </p>

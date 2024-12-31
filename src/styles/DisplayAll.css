@@ -1,13 +1,24 @@
 .displayAll-container {
+    margin-left: 20px;
     display: flex;
     justify-content: space-around;
-    flex-direction: row;
     flex-wrap: wrap;
     gap: 20px;
 }
 
+.displayAll-container>* {
+    flex: 1 0 48%;
+    box-sizing: border-box;
+}
 .title {
+    margin-bottom: 30px;
     text-align: center;
+    text-decoration: underline;
+        text-transform: uppercase;
+        text-decoration-color: red;
+        word-spacing: 5px;
+        letter-spacing: 2px;
+        text-underline-offset: 5px;
 }
 
 .output-section hr {
@@ -17,4 +28,10 @@
 .output-section button {
     padding: 5px;
     font-size: 14px;
+}
+.avatar-section .avatar-image {
+    height: 50px;
+    width: 50px;
+    border-radius: 8px;
+    object-fit: cover;
 }

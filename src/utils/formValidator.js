@@ -12,4 +12,18 @@ export const validationSchema = Yup.object({
   status: Yup.string()
     .oneOf(["draft", "pending", "approved", "rejected"], "Invalid status")
     .required("Status is required"),
+  avatar: Yup.mixed()
+    .nullable()
+    .test(
+      "fileSize",
+      "The file is too large. Max size is 2MB.",
+      (value) => !value || (value && value.size <= 2 * 1024 * 1024) // 2MB
+    )
+    .test(
+      "fileType",
+      "Only JPG and PNG files are allowed.",
+      (value) =>
+        !value ||
+        (value && (value.type === "image/jpeg" || value.type === "image/png"))
+    ),
 });
