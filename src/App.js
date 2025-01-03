@@ -1,6 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import MyForm from "./components/MyForm";
-import Output from "./components/Output";
 import Home from "./components/Home";
 import PageNotFound from "./components/PageNotFound";
 import "./styles/App.css";
@@ -14,10 +13,9 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/create-event" element={<MyForm />} />
-          <Route path="/event" element={<Output />} />
-          <Route path="/event/eventId/:id" element={<DisplayById />} />
+          <Route path="/event/:id" element={<DisplayById />} />
           <Route path="/event/listEvents" element={<DisplayAll />} />
-          <Route path="/event/edit/:id" element={<MyForm />} />
+          <Route path="/create-event/:id" element={<MyForm />} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>
       </div>
