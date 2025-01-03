@@ -1,14 +1,36 @@
 import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Formik, Form, Field } from "formik";
 import { validationSchema } from "../utils/formValidator";
-import { handleSubmit, handleSearchById } from "../utils/Handler"; // Adjusted for getting event data
+import { handleSubmit } from "../utils/Handler";
 import FormRow from "../ui/FormRow";
 import Button from "../ui/Button";
-import { useNavigate, useParams } from "react-router-dom";
 import BackButton from "../ui/BackButton";
 import "../styles/Form.css";
 
+const fetchData = async (id, event, setEventData, setErrorMessage) => {
+  if (id && !event) {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/events/get/${id}`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch event data");
+      }
+      const data = await response.json();
+
+      setEventData(data.data);
+    } catch (error) {
+      setErrorMessage(error.message);
+    }
+  } else if (event) {
+    setEventData(event);
+  }
+};
+
 function MyForm() {
+  const location = useLocation();
+  const { event } = location.state || {};
   const navigate = useNavigate();
   const { id } = useParams();
   const [eventData, setEventData] = useState();
@@ -16,55 +38,42 @@ function MyForm() {
   const [isAvatar, setIsAvatar] = useState(true);
 
   useEffect(() => {
-    if (id) {
-      handleSearchById(id, setEventData, setErrorMessage);
-    }
-  }, [id]);
+    fetchData(id, event, setEventData, setErrorMessage);
+  }, [id, event]);
 
   if (id && !eventData && !errorMessage) {
     return <p>Loading event data...</p>;
   }
 
-  const initialValues = eventData
-    ? {
-        id: eventData.data.id,
-        title: eventData.data.title,
-        untaggedOrganizers: eventData.data.untaggedOrganizers,
-        startDate: eventData.data.startDate || "",
-        dueDate: eventData.data.dueDate || "",
-        destinationLink: eventData.data.destinationLink || "",
-        status: eventData.data.status || "",
-        avatar: eventData.data.avatar || null,
-      }
-    : {
-        title: "",
-        untaggedOrganizers: "",
-        startDate: "2025-01-01T18:30:00.000Z",
-        dueDate: "2026-01-01T18:30:00.000Z",
-        destinationLink: "",
-        status: "",
-        avatar: null,
-      };
+  const data = {
+    ...(eventData ? { id: eventData.id } : {}),
+    title: eventData?.title ?? "",
+    untaggedOrganizers: eventData?.untaggedOrganizers ?? "",
+    startDate: eventData?.startDate ?? "2025-01-01T18:30:00.000Z",
+    dueDate: eventData?.dueDate ?? "",
+    destinationLink: eventData?.destinationLink ?? "",
+    status: eventData?.status ?? "",
+    avatar: eventData?.avatar ?? null,
+    publicId: eventData?.publicId ?? null,
+    avatarRemove: false,
+  };
 
   const handleFormSubmit = async (formValues, { setSubmitting, resetForm }) => {
     try {
-      // Set default avatar if it's null
-      if (!formValues.avatar) {
-        formValues.avatar =
-          "https://res.cloudinary.com/dh7ls2cvc/image/upload/v1735632501/avatars/mqortpvrbntvqzhvzj6j.jpg";
-      }
       console.log("formData ", formValues);
 
       await handleSubmit(formValues, { setSubmitting, resetForm });
       navigate("/event/listEvents");
     } catch (error) {
       console.error("Error submitting form:", error);
+      setErrorMessage(error);
       setSubmitting(false);
     }
   };
 
   const handleRemoveAvatar = (setFieldValue) => {
     setFieldValue("avatar", null);
+    setFieldValue("avatarRemove", true);
     document.getElementById("avatar").value = "";
     setIsAvatar(false);
   };
@@ -73,7 +82,7 @@ function MyForm() {
     <div className="form-container">
       {errorMessage && <p className="error-message">{errorMessage}</p>}
       <Formik
-        initialValues={initialValues}
+        initialValues={data}
         validationSchema={validationSchema}
         onSubmit={handleFormSubmit}
         enableReinitialize={true}
@@ -150,10 +159,11 @@ function MyForm() {
                 onChange={(event) => {
                   const file = event.currentTarget.files[0];
                   setFieldValue("avatar", file); // Set the selected file
+                  setFieldValue("avatarRemove", false); // Reset avatarRemove
                 }}
               />
 
-              {/* Here i'm Displaying the fetched avatar file name if available and no new file is selected */}
+              {/* Display fetched avatar file name if available and no new file is selected */}
               {id &&
                 typeof values.avatar === "string" &&
                 !values.avatar.name && (
@@ -169,7 +179,7 @@ function MyForm() {
                   </>
                 )}
 
-              {/* Here i'm Displaying the selected file name */}
+              {/* Display the selected file name */}
               {values.avatar && typeof values.avatar !== "string" && (
                 <p className="avatar-file-name">
                   Selected File: {values.avatar.name}
@@ -183,6 +193,7 @@ function MyForm() {
                 <div className="error-message">{errors.avatar}</div>
               )}
             </div>
+
             <Button
               type="submit"
               variant="primary"

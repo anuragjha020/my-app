@@ -11,7 +11,7 @@ function Home() {
         </Link>
       </div>
       <div>
-        <Link to="/event">
+        <Link to="/event/listEvents">
           <button>View Event</button>
         </Link>
       </div>

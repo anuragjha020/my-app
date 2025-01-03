@@ -1,106 +1,78 @@
-import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { handleSearchById, handleDelete } from "../utils/Handler";
+import React from "react";
+import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { handleDelete } from "../utils/Handler";
+
 import Button from "../ui/Button";
 import BackButton from "../ui/BackButton";
-import "../styles/DisplayById.css";
 
 function DisplayById() {
-  const { id } = useParams();
+  const location = useLocation();
+  const { event } = location.state || {};
   const navigate = useNavigate();
-  const [fetchedDataById, setFetchedDataById] = useState(null);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      await handleSearchById(id, setFetchedDataById, setErrorMessage);
-      setLoading(false);
-    };
-    fetchData();
-  }, [id]);
 
   const handleEdit = () => {
-    navigate(`/event/edit/${fetchedDataById.data.id}`);
+    navigate(`/create-event/${event.id}`);
   };
 
   const handleDeleteEvent = async (deleteId) => {
     await handleDelete(deleteId);
-    navigate("/event");
+    navigate("/event/listEvents");
   };
 
   return (
     <div className="output-section">
-      <h2 className="title">Event by ID</h2>
-      {loading ? (
-        <p>Loading...</p>
-      ) : errorMessage ? (
-        <p className="error-message">{errorMessage}</p>
-      ) : fetchedDataById ? (
+      <h2 className="title">Event Details</h2>
+      {event ? (
         <div className="data-item">
           {/* Avatar Section */}
-          {fetchedDataById.data.avatar && (
-            <div className="avatar-section">
-              <img
-                src={fetchedDataById.data.avatar}
-                alt="Avatar"
-                className="avatar-image"
-              />
-            </div>
-          )}
+          <div className="avatar-section">
+            <img
+              src={event.avatar === null ? "/avatar.jpeg" : event.avatar}
+              alt="Avatar"
+              className="avatar-image"
+            />
+          </div>
           {/* Event Details */}
           <p>
-            <strong>ID:</strong> {fetchedDataById.data.id}
+            <strong>ID:</strong> {event.id}
           </p>
           <p>
-            <strong>Title:</strong> {fetchedDataById.data.title}
+            <strong>Title:</strong> {event.title}
           </p>
           <p>
-            <strong>Organizers:</strong>{" "}
-            {fetchedDataById.data.untaggedOrganizers || ""}
+            <strong>Organizers:</strong> {event.untaggedOrganizers || ""}
           </p>
           <p>
             <strong>Start Date:</strong>{" "}
-            {new Date(fetchedDataById.data.startDate).toLocaleString()}
+            {new Date(event.startDate).toLocaleString()}
           </p>
           <p>
             <strong>Due Date:</strong>{" "}
-            {new Date(fetchedDataById.data.dueDate).toLocaleString()}
+            {new Date(event.dueDate).toLocaleString()}
           </p>
           <p>
             <strong>Destination Link:</strong>{" "}
-            {fetchedDataById.data.destinationLink && (
-              <a href={fetchedDataById.data.destinationLink}>
-                {fetchedDataById.data.destinationLink}
-              </a>
+            {event.destinationLink && (
+              <a href={event.destinationLink}>{event.destinationLink}</a>
             )}
           </p>
           <p>
-            <strong>Status:</strong> {fetchedDataById.data.status || ""}
+            <strong>Status:</strong> {event.status || ""}
           </p>
           {/* Buttons */}
           <Button variant="warning" onClick={handleEdit}>
             Edit
           </Button>{" "}
-          <Button
-            variant="danger"
-            onClick={() => handleDeleteEvent(fetchedDataById.data.id)}
-          >
+          <Button variant="danger" onClick={() => handleDeleteEvent(event.id)}>
             Delete
           </Button>
         </div>
       ) : (
         <p>No event found for this ID.</p>
-      )}
-
-      {!loading && (
-        <>
-          {" "}
-          <hr />
-          <BackButton to="/" text="⬅️ Home" />
-        </>
-      )}
+      )}{" "}
+      <hr />
+      <BackButton to="/" text="⬅️ Home" />
     </div>
   );
 }

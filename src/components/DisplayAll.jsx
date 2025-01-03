@@ -30,7 +30,13 @@ function DisplayAll() {
   }, []);
 
   const handleEdit = (id) => {
-    navigate(`/event/edit/${id}`);
+    const selectedEvent = fetchedData.find((event) => event.id === id);
+    navigate(`/create-event/${id}`, { state: { event: selectedEvent } });
+  };
+
+  const handleView = (id) => {
+    const selectedEvent = fetchedData.find((event) => event.id === id);
+    navigate(`/event/${id}`, { state: { event: selectedEvent } });
   };
 
   const handleDelete = (id) => {
@@ -38,7 +44,7 @@ function DisplayAll() {
       // Optimistically remove the event from the list
       setFetchedData((prevData) => ({
         ...prevData,
-        data: prevData.data.filter((event) => event.id !== id),
+        data: prevData.filter((event) => event.id !== id),
       }));
 
       // Proceed with the delete request
@@ -52,7 +58,7 @@ function DisplayAll() {
           alert("Error deleting event: " + error.message);
           setFetchedData((prevData) => ({
             ...prevData,
-            data: [...prevData.data, { id }], // Re-add deleted item (this part should match the deleted event)
+            data: [...prevData, { id }], // Re-add deleted item (this part should match the deleted event)
           }));
         });
     }
@@ -67,44 +73,27 @@ function DisplayAll() {
         <p className="error-message">{errorMessage}</p>
       ) : (
         <div className="displayAll-container">
-          {fetchedData && fetchedData.data?.length > 0 ? (
-            fetchedData.data.map((event) => (
+          {fetchedData && fetchedData?.length > 0 ? (
+            fetchedData.map((event) => (
               <div className="data-item" key={event.id}>
                 {/* Avatar Section */}
-                {event.avatar && (
-                  <div className="avatar-section">
-                    <img
-                      src={event.avatar}
-                      alt="Avatar"
-                      className="avatar-image"
-                    />
-                  </div>
-                )}
-                <p>
-                  <strong>ID:</strong> {event.id}
-                </p>
+                <div className="avatar-section">
+                  <img
+                    src={event.avatar === null ? "/avatar.jpeg" : event.avatar}
+                    alt="Avatar"
+                    className="avatar-image"
+                  />
+                </div>
                 <p>
                   <strong>Title:</strong> {event.title}
                 </p>
                 <p>
-                  <strong>Start Date:</strong>{" "}
-                  {new Date(event.startDate).toLocaleString()}
+                  <strong>untaggedOrganizers:</strong>{" "}
+                  {event.untaggedOrganizers}
                 </p>
-                <p>
-                  <strong>Due Date:</strong>{" "}
-                  {new Date(event.dueDate).toLocaleString()}
-                </p>
-                <p>
-                  <strong>Destination Link:</strong>{" "}
-                  {event.destinationLink && (
-                    <a href={event.destinationLink}>{event.destinationLink}</a>
-                  )}
-                </p>
-                <p>
-                  <strong>Status:</strong> {event.status || ""}
-                </p>
-                <button onClick={() => handleEdit(event.id)}>Edit</button>
-                <button onClick={() => handleDelete(event.id)}>Delete</button>
+                <button onClick={() => handleEdit(event.id)}>Edit</button>{" "}
+                <button onClick={() => handleDelete(event.id)}>Delete</button>{" "}
+                <button onClick={() => handleView(event.id)}>View</button>
                 <hr />
               </div>
             ))

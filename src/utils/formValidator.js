@@ -1,4 +1,5 @@
 import * as Yup from "yup";
+import { maxSize } from "../variables/const";
 
 export const validationSchema = Yup.object({
   title: Yup.string().required("Title is required"),
@@ -15,15 +16,20 @@ export const validationSchema = Yup.object({
   avatar: Yup.mixed()
     .nullable()
     .test(
-      "fileSize",
-      "The file is too large. Max size is 2MB.",
-      (value) => !value || (value && value.size <= 2 * 1024 * 1024) // 2MB
+      "fileOrUrl",
+      `Invalid avatar. Must be a file or a valid URL.`,
+      (value) =>
+        !value || // Allow no value
+        (typeof value === "object" && value.size <= maxSize * 1024 * 1024) || // Validate file object
+        (typeof value === "string" && value.startsWith("http")) // Allow URL strings
     )
     .test(
       "fileType",
       "Only JPG and PNG files are allowed.",
       (value) =>
-        !value ||
-        (value && (value.type === "image/jpeg" || value.type === "image/png"))
+        !value || // Allow no value
+        typeof value === "string" || // Skip type check for URLs
+        value.type === "image/jpeg" ||
+        value.type === "image/png" // Validate file type
     ),
 });

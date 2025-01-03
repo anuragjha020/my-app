@@ -4,7 +4,7 @@ const API_ENDPOINTS = {
   create: `${API_BASE_URL}/add`,
   update: (id) => `${API_BASE_URL}/update/${id}`,
   fetchAll: `${API_BASE_URL}/get`,
-  fetchById: (id) => `${API_BASE_URL}/get/${id}`,
+  // fetchById: (id) => `${API_BASE_URL}/get/${id}`,
   delete: (id) => `${API_BASE_URL}/delete/${id}`,
 };
 
@@ -75,13 +75,21 @@ export const handleFetchAll = async (setFetchedData, setErrorMessage) => {
     });
 
     if (!response.ok) {
-      throw new Error("Failed to fetch all data.");
+      // Check for specific status codes 404
+      if (response.status === 404) {
+        // Treat 404 as "no data found"
+        console.warn("No data found in the database.");
+        setFetchedData([]);
+        if (setErrorMessage) setErrorMessage(null);
+        return;
+      }
+      throw new Error(`Failed to fetch all data. Status: ${response.status}`);
     }
 
     const data = await response.json();
-    console.log("Fetched all data:", data);
+    console.log("Fetched all data:", data.data);
 
-    setFetchedData(data);
+    setFetchedData(data.data);
     if (setErrorMessage) setErrorMessage(null);
   } catch (error) {
     handleError(error, setErrorMessage);
@@ -89,25 +97,38 @@ export const handleFetchAll = async (setFetchedData, setErrorMessage) => {
 };
 
 // Fetch a specific record by ID
-export const handleSearchById = async (id, setFetchedData, setErrorMessage) => {
-  try {
-    const response = await fetch(API_ENDPOINTS.fetchById(id), {
-      method: "GET",
-    });
+// export const handleSearchById = async (id, setFetchedData, setErrorMessage) => {
+//   try {
+//     const response = await fetch(API_ENDPOINTS.fetchById(id), {
+//       method: "GET",
+//     });
 
-    if (!response.ok) {
-      throw new Error(`No data found for ID: ${id}`);
-    }
+//     if (!response.ok) {
+//       throw new Error(`No data found for ID: ${id}`);
+//     }
 
-    const data = await response.json();
-    console.log("Fetched data by ID:", data);
+//     const data = (await response.json()).data;
+//     console.log("Fetched data by ID:", data);
 
-    setFetchedData(data);
-    if (setErrorMessage) setErrorMessage(null);
-  } catch (error) {
-    handleError(error, setErrorMessage);
-  }
-};
+//     const requiredData = {
+//       id: data.id,
+//       title: data.title,
+//       untaggedOrganizers: data.untaggedOrganizers,
+//       startDate: data.startDate,
+//       dueDate: data.dueDate,
+//       destinationLink: data.destinationLink,
+//       status: data.status,
+//       avatar: data.avatar,
+//       publicId: data.publicId,
+//     };
+//     console.log("requiredData", requiredData);
+
+//     setFetchedData(requiredData);
+//     if (setErrorMessage) setErrorMessage(null);
+//   } catch (error) {
+//     handleError(error, setErrorMessage);
+//   }
+// };
 
 // Delete a record
 export const handleDelete = async (id) => {
