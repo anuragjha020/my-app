@@ -7,13 +7,14 @@ import FormRow from "../ui/FormRow";
 import Button from "../ui/Button";
 import BackButton from "../ui/BackButton";
 import "../styles/Form.css";
+import { API_BASE_URL } from "../variables/const";
 
 const fetchData = async (id, event, setEventData, setErrorMessage) => {
+  console.log("event :", event);
+
   if (id && !event) {
     try {
-      const response = await fetch(
-        `http://localhost:5000/api/events/get/${id}`
-      );
+      const response = await fetch(`${API_BASE_URL}/get/${id}`);
       if (!response.ok) {
         throw new Error("Failed to fetch event data");
       }

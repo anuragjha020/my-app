@@ -1,4 +1,4 @@
-const API_BASE_URL = `http://localhost:5000/api/events`;
+import { API_BASE_URL } from "../variables/const";
 
 const API_ENDPOINTS = {
   create: `${API_BASE_URL}/add`,
