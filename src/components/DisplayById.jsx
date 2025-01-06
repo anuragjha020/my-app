@@ -5,6 +5,7 @@ import { handleDelete } from "../utils/Handler";
 
 import Button from "../ui/Button";
 import BackButton from "../ui/BackButton";
+import { Create, EventList, home } from "../variables/const";
 
 function DisplayById() {
   const location = useLocation();
@@ -12,12 +13,12 @@ function DisplayById() {
   const navigate = useNavigate();
 
   const handleEdit = () => {
-    navigate(`/create-event/${event.id}`);
+    navigate(`${Create}/${event.id}`);
   };
 
   const handleDeleteEvent = async (deleteId) => {
     await handleDelete(deleteId);
-    navigate("/event/listEvents");
+    navigate(`${EventList}`);
   };
 
   return (
@@ -72,7 +73,7 @@ function DisplayById() {
         <p>No event found for this ID.</p>
       )}{" "}
       <hr />
-      <BackButton to="/" text="⬅️ Home" />
+      <BackButton to={home} text="⬅️ Home" />
     </div>
   );
 }

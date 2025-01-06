@@ -7,6 +7,7 @@ import {
 } from "../utils/Handler";
 import BackButton from "../ui/BackButton";
 import "../styles/DisplayAll.css";
+import { Create, Event, home } from "../variables/const";
 
 function DisplayAll() {
   const [fetchedData, setFetchedData] = useState(null);
@@ -31,12 +32,12 @@ function DisplayAll() {
 
   const handleEdit = (id) => {
     const selectedEvent = fetchedData.find((event) => event.id === id);
-    navigate(`/create-event/${id}`, { state: { event: selectedEvent } });
+    navigate(`${Create}/${id}`, { state: { event: selectedEvent } });
   };
 
   const handleView = (id) => {
     const selectedEvent = fetchedData.find((event) => event.id === id);
-    navigate(`/event/${id}`, { state: { event: selectedEvent } });
+    navigate(`${Event}/${id}`, { state: { event: selectedEvent } });
   };
 
   const handleDelete = (id) => {
@@ -102,7 +103,7 @@ function DisplayAll() {
           )}
         </div>
       )}
-      {!loading && <BackButton to="/" text="⬅️ Home" />}
+      {!loading && <BackButton to={home} text="⬅️ Home" />}
     </div>
   );
 }

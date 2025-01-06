@@ -1,12 +1,4 @@
-import { API_BASE_URL } from "../variables/const";
-
-const API_ENDPOINTS = {
-  create: `${API_BASE_URL}/add`,
-  update: (id) => `${API_BASE_URL}/update/${id}`,
-  fetchAll: `${API_BASE_URL}/get`,
-  // fetchById: (id) => `${API_BASE_URL}/get/${id}`,
-  delete: (id) => `${API_BASE_URL}/delete/${id}`,
-};
+import { API_ENDPOINTS } from "../variables/const";
 
 // function for errors
 const handleError = (error, setErrorMessage) => {
@@ -59,7 +51,7 @@ export const handleSubmit = async (
     alert(`${id ? "Updated" : "Created"} event successfully!`);
     console.log(`${id ? "Updated" : "Created"} Event:`, data);
 
-    if (!id) resetForm(); // Reset form only for create
+    if (!id) resetForm();
   } catch (error) {
     handleError(error);
   } finally {
