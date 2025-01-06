@@ -8,7 +8,8 @@ import FormRow from "../ui/FormRow";
 import Button from "../ui/Button";
 import BackButton from "../ui/BackButton";
 import "../styles/Form.css";
-import { API_ENDPOINTS, Date, home } from "../variables/const";
+import { API_ENDPOINTS, date, home } from "../variables/const";
+import { formatDate } from "../utils/formateDate";
 
 // Fetch data based on the provided ID
 const fetchData = async (id, setEventData, setErrorMessage, setLoading) => {
@@ -49,8 +50,14 @@ function MyForm() {
     ...(eventData ? { id: eventData.id } : {}),
     title: eventData?.title ?? "",
     untaggedOrganizers: eventData?.untaggedOrganizers ?? "",
-    startDate: eventData?.startDate ?? Date,
-    dueDate: eventData?.dueDate ?? "",
+    // startDate: formatDate(eventData?.startDate) ?? formatDate(date),
+    // dueDate: formatDate(eventData?.dueDate) ?? formatDate(date + 1),
+    startDate:
+      (eventData ? formatDate(eventData?.startDate) : eventData?.startDate) ??
+      formatDate(date),
+    dueDate:
+      (eventData ? formatDate(eventData?.dueDate) : eventData?.duetDate) ??
+      formatDate(new Date(date).setDate(new Date(date).getDate() + 1)),
     destinationLink: eventData?.destinationLink ?? "",
     status: eventData?.status ?? "",
     avatar: eventData?.avatar ?? null,

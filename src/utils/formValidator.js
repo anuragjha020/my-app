@@ -1,37 +1,37 @@
 import * as Yup from "yup";
 import { maxSize } from "../variables/const";
 
-// const today = new Date();
-// today.setHours(0, 0, 0, 0);
+const today = new Date();
+today.setHours(0, 0, 0, 0);
 
 export const validationSchema = Yup.object({
   title: Yup.string().required("Title is required"),
   untaggedOrganizers: Yup.string().required("Organizers are required"),
 
   //validated start and due date
-  // startDate: Yup.date()
-  //   .required("Start date is required")
-  //   .typeError("Invalid date format")
-  //   .min(today, "Start date must be today or later"),
-
-  // dueDate: Yup.date()
-  //   .required("Due date is required")
-  //   .typeError("Invalid date format")
-  //   .when("startDate", (startDate, schema) => {
-  //     if (startDate) {
-  //       const nextDay = new Date(startDate);
-  //       nextDay.setDate(nextDay.getDate() + 1); // Add 1 day to startDate
-  //       return schema.min(
-  //         nextDay,
-  //         "Due date must be at least 1 day after the start date"
-  //       );
-  //     }
-  //     return schema;
-  //   }),
-
   startDate: Yup.date()
     .required("Start date is required")
-    .typeError("Invalid date format"),
+    .typeError("Invalid date format")
+    .min(today, "Start date must be today or later"),
+
+  dueDate: Yup.date()
+    .required("Due date is required")
+    .typeError("Invalid date format")
+    .when("startDate", (startDate, schema) => {
+      if (startDate) {
+        const nextDay = new Date(startDate);
+        nextDay.setDate(nextDay.getDate() + 1); // Add 1 day to startDate
+        return schema.min(
+          nextDay,
+          "Due date must be at least 1 day after the start date"
+        );
+      }
+      return schema;
+    }),
+
+  // startDate: Yup.date()
+  //   .required("Start date is required")
+  //   .typeError("Invalid date format"),
   destinationLink: Yup.string()
     .url("Must be a valid URL")
     .required("Destination link is required"),

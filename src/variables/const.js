@@ -11,10 +11,10 @@ export const API_ENDPOINTS = {
 };
 
 //avatar file size
-export const maxSize = 2;
+export const maxSize = 5;
 
 //static date
-export const Date = "2025-01-01T18:30:00.000Z";
+export const date = new Date();
 
 //route for homepage
 export const home = "/";
