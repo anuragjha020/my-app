@@ -14,7 +14,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/create-event" element={<MyForm />} />
           <Route path="/event/:id" element={<DisplayById />} />
-          <Route path="/event/listEvents" element={<DisplayAll />} />
+          <Route path="/listEvents" element={<DisplayAll />} />
           <Route path="/create-event/:id" element={<MyForm />} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>

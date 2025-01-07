@@ -23,7 +23,7 @@ export const home = "/";
 export const Create = "/create-event";
 
 //route for display all existing event
-export const EventList = "/event/listEvents";
+export const EventList = "/listEvents";
 
 //route for single event by id
 export const Event = "/event";

@@ -1,3 +1,15 @@
+.sorting-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+
+}
+
+.sorting-container select {
+    padding: 5px;
+    font-size: 14px;
+    margin-right: 20px;
+}
 .displayAll-container {
     margin-left: 20px;
     display: flex;

@@ -11,8 +11,8 @@ export const validationSchema = Yup.object({
   //validated start and due date
   startDate: Yup.date()
     .required("Start date is required")
-    .typeError("Invalid date format")
-    .min(today, "Start date must be today or later"),
+    .typeError("Invalid date format"),
+  // .min(today, "Start date must be today or later"),
 
   dueDate: Yup.date()
     .required("Due date is required")

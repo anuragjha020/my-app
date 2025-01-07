@@ -8,7 +8,7 @@ import FormRow from "../ui/FormRow";
 import Button from "../ui/Button";
 import BackButton from "../ui/BackButton";
 import "../styles/Form.css";
-import { API_ENDPOINTS, date, home } from "../variables/const";
+import { API_ENDPOINTS, date, EventList, home } from "../variables/const";
 import { formatDate } from "../utils/formateDate";
 
 // Fetch data based on the provided ID
@@ -21,7 +21,20 @@ const fetchData = async (id, setEventData, setErrorMessage, setLoading) => {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
-      setEventData(data.data);
+      const requiredData = {
+        id: data.data.id,
+        title: data.data.title,
+        untaggedOrganizers: data.data.untaggedOrganizers,
+        startDate: data.data.startDate,
+        dueDate: data.data.dueDate,
+        destinationLink: data.data.destinationLink,
+        status: data.data.status,
+        avatar: data.data.avatar,
+        publicId: data.data.publicId,
+      };
+      console.log("requiredData", requiredData);
+
+      setEventData(requiredData);
     } catch (error) {
       setErrorMessage(error.message);
     } finally {
@@ -50,8 +63,6 @@ function MyForm() {
     ...(eventData ? { id: eventData.id } : {}),
     title: eventData?.title ?? "",
     untaggedOrganizers: eventData?.untaggedOrganizers ?? "",
-    // startDate: formatDate(eventData?.startDate) ?? formatDate(date),
-    // dueDate: formatDate(eventData?.dueDate) ?? formatDate(date + 1),
     startDate:
       (eventData ? formatDate(eventData?.startDate) : eventData?.startDate) ??
       formatDate(date),
@@ -70,7 +81,7 @@ function MyForm() {
       console.log("formData ", formValues);
 
       await handleSubmit(formValues, { setSubmitting, resetForm });
-      navigate("/event/listEvents");
+      navigate(EventList);
     } catch (error) {
       console.error("Error submitting form:", error);
       setErrorMessage(error);
