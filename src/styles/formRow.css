@@ -11,7 +11,7 @@
 .form-row-input {
     display: block;
     width: 100%;
-    padding: 0.5rem;
+    padding: 0.5rem 0;
     font-size: 1rem;
     line-height: 1.5;
     color: #495057;

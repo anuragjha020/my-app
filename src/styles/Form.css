@@ -10,7 +10,8 @@
     border-radius: 8px;
 }
 
-.form-row {
+.form-row,
+.form-row-avatar {
     margin-bottom: 15px;
 }
 
@@ -27,6 +28,12 @@
     border-radius: 4px;
 }
 
+.form-row-avatar input {
+    width: 100%;
+    padding: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
 .error-message {
     color: red;
     font-size: 0.85rem;

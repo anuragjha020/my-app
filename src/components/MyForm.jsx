@@ -171,7 +171,7 @@ function MyForm() {
                   <div className="error-message">{errors.status}</div>
                 )}
               </div>
-              <div className="form-row">
+              <div className="form-row-avatar">
                 <label htmlFor="avatar">Avatar</label>
                 <input
                   id="avatar"
